@@ -48,4 +48,4 @@ jobs:
           git config --global user.name "ravindrasinghh"
           git add argocd-cicd-setup/dev/deployment.yaml
           git commit -m "Update image tag to ${{ github.run_number }}"
-          git push origin master
+          git push
