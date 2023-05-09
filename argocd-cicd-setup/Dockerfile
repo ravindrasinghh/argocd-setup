@@ -5,6 +5,6 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y install tzdata
 RUN apt-get install apache2 -y
 WORKDIR UBUNTU_HOME
-COPY script/ ${UBUNTU_HOME}
+COPY argocd-cicd-setup/script/index.html ${UBUNTU_HOME}
 EXPOSE 80
 CMD ["apachectl" , "-D","FOREGROUND"]
