@@ -44,3 +44,10 @@ jobs:
 
           # Apply the updated YAML file to the Kubernetes cluster
           kubectl apply -f argocd-cicd-setup/dev/deployment.yaml
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "ravindrasinghh.me@gmail.com"
+          git config --global user.name "ravindrasinghh"
+          git add deployment.yaml
+          git commit -m "Update image tag to ${{ github.run_number }}"
+          git push 
