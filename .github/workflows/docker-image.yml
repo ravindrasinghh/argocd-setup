@@ -38,6 +38,6 @@ jobs:
         run: |
           git config --global user.email "ravindrasinghh.me@gmail.com"
           git config --global user.name "ravindrasinghh"
-          git add deployment.yaml
+          git add argocd-cicd-setup/dev/deployment.yaml
           git commit -m "Update image tag to ${{ github.run_number }}"
-          git push 
+          git push origin master
