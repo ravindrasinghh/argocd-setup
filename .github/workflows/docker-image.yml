@@ -2,8 +2,9 @@ name: Deploy to Kubernetes
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -29,11 +30,18 @@ jobs:
         run: |
           docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile .
           docker push ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER
-
+      - name: Login to GitHub Packages
+        uses: docker/login-action@v1
+        with:
+          registry: docker.pkg.github.com
+          username: "ravindrasinghh"
+          password: ${{ secrets.G_TOKEN }}
+      
       # Update the image tag in Kubernetes deployment YAML file
       - name: Update deployment YAML
         run: |
           sed -i'' "s|${DOCKER_USERNAME}/my-app:.*|${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER|" argocd-cicd-setup/dev/deployment.yaml
+          cat argocd-cicd-setup/dev/deployment.yaml
       - name: Commit and push changes
         run: |
           git config --global user.email "ravindrasinghh.me@gmail.com"
