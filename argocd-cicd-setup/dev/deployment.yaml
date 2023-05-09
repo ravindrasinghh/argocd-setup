@@ -17,6 +17,6 @@ spec:
       containers:
         - name: my-container
           imagePullPolicy: Always
-          image: ravindrasingh6969/load:latest
+          image: ravindrasingh6969/my-app:$GITHUB_RUN_NUMBER
           ports:
             - containerPort: 80
