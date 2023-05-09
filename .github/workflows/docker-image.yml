@@ -21,7 +21,7 @@ jobs:
       # Build Docker image and push it to Docker Hub
       - name: Build and push Docker image
         run: |
-          docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile --fail-fast .
+          docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile .
           docker push ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER
 
       # Update the image tag in Kubernetes deployment YAML file
