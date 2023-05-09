@@ -31,11 +31,11 @@ jobs:
           docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile .
           docker push ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER
       - name: Login to GitHub Packages
-        uses: docker/login-action@v1
+        uses: actions/checkout@v3
         with:
-          registry: docker.pkg.github.com
-          username: "ravindrasinghh"
-          password: ${{ secrets.G_TOKEN }}
+          repository: ravindrasinghh/argocd-setup
+          ref: 'master'
+          token: ${{ secrets.G_TOKEN }}
       
       # Update the image tag in Kubernetes deployment YAML file
       - name: Update deployment YAML
