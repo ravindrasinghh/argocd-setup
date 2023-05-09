@@ -1,0 +1,42 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code from GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Build Docker image and push it to Docker Hub
+      - name: Build and push Docker image
+        run: |
+          ls 
+          pwd
+          docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER .
+          docker push ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER
+
+      # Update the image tag in Kubernetes deployment YAML file
+      - name: Update deployment YAML
+        run: |
+          sed -i'' "s|${DOCKER_USERNAME}/my-app:.*|${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER|" kubernetes/deployment.yaml
+
+          # Install kubectl if not already installed
+          if ! command -v kubectl >/dev/null 2>&1; then
+            curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            sudo mv kubectl /usr/local/bin/
+          fi
+
+          # Apply the updated YAML file to the Kubernetes cluster
+          kubectl apply -f kubernetes/deployment.yaml
