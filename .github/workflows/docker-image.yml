@@ -34,16 +34,6 @@ jobs:
       - name: Update deployment YAML
         run: |
           sed -i'' "s|${DOCKER_USERNAME}/my-app:.*|${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER|" argocd-cicd-setup/dev/deployment.yaml
-
-          # Install kubectl if not already installed
-          if ! command -v kubectl >/dev/null 2>&1; then
-            curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-            chmod +x kubectl
-            sudo mv kubectl /usr/local/bin/
-          fi
-
-          # Apply the updated YAML file to the Kubernetes cluster
-          kubectl apply -f argocd-cicd-setup/dev/deployment.yaml
       - name: Commit and push changes
         run: |
           git config --global user.email "ravindrasinghh.me@gmail.com"
