@@ -33,7 +33,7 @@ jobs:
       # Update the image tag in Kubernetes deployment YAML file
       - name: Update deployment YAML
         run: |
-          sed -i'' "s|${DOCKER_USERNAME}/my-app:.*|${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER|" kubernetes/deployment.yaml
+          sed -i'' "s|${DOCKER_USERNAME}/my-app:.*|${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER|" argocd-cicd-setup/dev/deployment.yaml
 
           # Install kubectl if not already installed
           if ! command -v kubectl >/dev/null 2>&1; then
@@ -43,4 +43,4 @@ jobs:
           fi
 
           # Apply the updated YAML file to the Kubernetes cluster
-          kubectl apply -f kubernetes/deployment.yaml
+          kubectl apply -f argocd-cicd-setup/dev/deployment.yaml
