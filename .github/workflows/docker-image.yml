@@ -25,7 +25,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}  
 
       # Build Docker image and push it to Docker Hub
-      - name: Build and push Docker image
+      - name: Build Docker image
         run: |
           docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile .
 
