@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Push Docker image
         run: |
+          pwd
+          ls
           docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile .
           docker push ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER
   deploy:
