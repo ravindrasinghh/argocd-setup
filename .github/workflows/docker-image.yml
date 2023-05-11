@@ -10,7 +10,7 @@ env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
 jobs:
-  build:
+  login:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,19 +23,15 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}  
-
-      # Build Docker image and push it to Docker Hub
-      - name: Build Docker image
-        run: |
-          docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile .
-
+          
   push: 
-    needs: build 
+    needs: login 
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Push Docker image
         run: |
+          docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile .
           docker push ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER
   deploy:
     needs: push
