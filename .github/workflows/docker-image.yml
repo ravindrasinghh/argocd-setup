@@ -2,18 +2,16 @@ name: Deploy to Kubernetes
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
     branches: [master]
-    types: [opened, synchronize]
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
 jobs:
-  login:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,24 +24,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}  
-          
-  push: 
-    needs: login 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Push Docker image
+
+      # Build Docker image and push it to Docker Hub
+      - name: Build and push Docker image
         run: |
-          pwd
-          ls
           docker build -t ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER -f argocd-cicd-setup/Dockerfile .
           docker push ${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER
-  deploy:
-    needs: push
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'    
-    steps:  
       - name: Login to GitHub Packages
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ravindrasinghh/argocd-setup
           ref: 'master'
@@ -52,21 +40,12 @@ jobs:
       # Update the image tag in Kubernetes deployment YAML file
       - name: Update deployment YAML
         run: |
-
-          if [ "${{ github.event.action }}" = "opened" ] || [ "${{ github.event.action }}" = "synchronize" ]; then
-            sed -i'' "s|${DOCKER_USERNAME}/my-app:.*|${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER|" argocd-cicd-setup/dev/deployment.yaml
-            cat argocd-cicd-setup/dev/deployment.yaml
-          else
-            echo "Deployment YAML update skipped for action ${{ github.event.action }}."
-          fi
+          sed -i'' "s|${DOCKER_USERNAME}/my-app:.*|${DOCKER_USERNAME}/my-app:$GITHUB_RUN_NUMBER|" argocd-cicd-setup/dev/deployment.yaml
+          cat argocd-cicd-setup/dev/deployment.yaml
       - name: Commit and push changes
         run: |
-          if [ "${{ github.event.action }}" = "opened" ] || [ "${{ github.event.action }}" = "synchronize" ]; then
-            git config --global user.email "ravindrasinghh.me@gmail.com"
-            git config --global user.name "ravindrasinghh"
-            git add argocd-cicd-setup/dev/deployment.yaml
-            git commit -m "Update image tag to ${{ github.run_number }}"
-            git push
-          else
-            echo "No changes to commit for action ${{ github.event.action }}."
-          fi
+          git config --global user.email "ravindrasinghh.me@gmail.com"
+          git config --global user.name "ravindrasinghh"
+          git add argocd-cicd-setup/dev/deployment.yaml
+          git commit -m "Update image tag to ${{ github.run_number }}"
+          git push
