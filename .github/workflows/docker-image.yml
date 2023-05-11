@@ -1,10 +1,9 @@
 name: Deploy to Kubernetes
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
+    types: [opened, synchronize]
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
