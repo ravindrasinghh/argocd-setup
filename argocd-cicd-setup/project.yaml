@@ -7,6 +7,10 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
   # Project description
   description: Learning CICD
   # Allow manifests to deploy from any Git repos
